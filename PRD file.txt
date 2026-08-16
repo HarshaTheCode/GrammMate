@@ -1,0 +1,25 @@
+Product Requirements Document (PRD)
+Product Name: AeroText (or your preferred name)
+Core Objective: A free, lightning-fast, zero-subscription browser extension for grammar and spelling correction, powered by a BYOK (Bring Your Own Key) OpenRouter architecture.
+Target Browsers: Chrome, Brave, Edge, Firefox (Manifest V3 standard).
+
+Phase 1: MVP (Minimum Viable Product) - What we are building now
+Settings Page: A simple UI to input and securely save the OpenRouter API Key locally.
+
+Text Capture: The ability to highlight text in any input field or text area on a web page.
+
+Trigger Mechanism: A floating "Fix" button that appears near highlighted text, or a keyboard shortcut (e.g., Ctrl+Shift+E).
+
+API Bridge: A background script that securely passes the highlighted text to the OpenRouter API using google/gemma-4-31b-it:free and a strict zero-chatter system prompt.
+
+Text Replacement: Automatically replaces the highlighted text with the corrected version returned by the AI.
+
+
+Phase 2: Feature Roadmap (Future Updates)
+Tone Switcher: A dropdown on the floating widget allowing the user to select "Professional," "Casual," "Academic," or "Shorter" before generating the rewrite.
+
+Inline "Ghost" Suggestions (Grammarly-style): Real-time monitoring of text fields to show red/blue underlines under mistakes, with one-click popups to accept changes.
+
+Custom Dictionary / Whitelist: A settings menu where users can add brand names, slang, or specific terms they don't want the AI to "fix."
+
+Correction History: A local log in the extension popup showing the last 50 edits made, allowing the user to copy original versions if they disliked the AI's rewrite.

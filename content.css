@@ -1,0 +1,475 @@
+/* content.css - GrammMate Monochrome UI */
+
+.gmate-portal {
+  position: absolute !important;
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  color: #f4f4f5 !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  opacity: 0 !important;
+  transform: translateY(6px) scale(0.95) !important;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.gmate-portal.gmate-visible {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+/* 1. Launcher Badge */
+.gmate-launcher {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  background: #18181b !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+  transition: all 0.2s ease !important;
+}
+
+.gmate-launcher:hover {
+  transform: scale(1.08) !important;
+  background: #27272a !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.gmate-launcher svg {
+  width: 16px !important;
+  height: 16px !important;
+  fill: #f4f4f5 !important;
+}
+
+/* 2. Expanded Control Panel Card */
+.gmate-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 280px !important;
+  background: rgba(24, 24, 27, 0.88) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+  padding: 12px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  gap: 10px !important;
+}
+
+.gmate-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding-bottom: 8px !important;
+}
+
+.gmate-title {
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  letter-spacing: -0.2px !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+.gmate-title svg {
+  width: 14px !important;
+  height: 14px !important;
+  fill: #ffffff !important;
+}
+
+.gmate-btn-settings {
+  background: none !important;
+  border: none !important;
+  color: #a1a1aa !important;
+  cursor: pointer !important;
+  padding: 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: color 0.15s ease !important;
+}
+
+.gmate-btn-settings:hover {
+  color: #ffffff !important;
+}
+
+.gmate-btn-settings svg {
+  width: 15px !important;
+  height: 15px !important;
+  fill: currentColor;
+}
+
+/* Tone Selector segmented pills styling */
+.gmate-form-group {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.gmate-label {
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  color: #a1a1aa !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+}
+
+.gmate-pills-container {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+  background: rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 8px !important;
+  padding: 3px !important;
+  transition: opacity 0.2s ease !important;
+}
+
+.gmate-pill {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 6px !important;
+  color: #a1a1aa !important;
+  font-family: inherit !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 5px 8px !important;
+  cursor: pointer !important;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  flex: 1 1 auto !important;
+  text-align: center !important;
+}
+
+.gmate-pill:hover:not(:disabled) {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.gmate-pill.active {
+  background: #ffffff !important;
+  color: #09090b !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
+.gmate-pill:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+.gmate-pills-container.gmate-disabled {
+  opacity: 0.5 !important;
+  pointer-events: none !important;
+}
+
+/* Actions styling */
+.gmate-actions {
+  display: flex !important;
+  gap: 6px !important;
+  margin-top: 4px !important;
+}
+
+.gmate-btn-primary {
+  flex: 1 !important;
+  background: #f4f4f5 !important;
+  color: #09090b !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  font-family: inherit !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  transition: all 0.15s ease !important;
+}
+
+.gmate-btn-primary:hover {
+  background: #ffffff !important;
+}
+
+.gmate-btn-primary:disabled {
+  background: #27272a !important;
+  color: #71717a !important;
+  cursor: not-allowed !important;
+}
+
+.gmate-btn-secondary {
+  background: transparent !important;
+  color: #f4f4f5 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  font-family: inherit !important;
+  font-weight: 500 !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.gmate-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* 3. Comparison / Result View Screen */
+.gmate-result {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding-top: 10px !important;
+  animation: gmate-fadeIn 0.25s ease !important;
+}
+
+.gmate-result-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.gmate-btn-copy-result {
+  background: none !important;
+  border: none !important;
+  color: #a1a1aa !important;
+  cursor: pointer !important;
+  padding: 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: color 0.15s ease !important;
+}
+
+.gmate-btn-copy-result:hover {
+  color: #ffffff !important;
+}
+
+.gmate-preview-container {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 8px !important;
+  padding: 8px 10px !important;
+  max-height: 120px !important;
+  overflow-y: auto !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+  word-break: break-word !important;
+}
+
+.gmate-diff-view {
+  color: #f4f4f5 !important;
+}
+
+.gmate-diff-del {
+  background-color: rgba(239, 68, 68, 0.18) !important;
+  color: #f87171 !important;
+  text-decoration: line-through !important;
+  padding: 1px 3px !important;
+  border-radius: 4px !important;
+  margin: 0 1px !important;
+}
+
+.gmate-diff-ins {
+  background-color: rgba(16, 185, 129, 0.18) !important;
+  color: #34d399 !important;
+  font-weight: 600 !important;
+  padding: 1px 3px !important;
+  border-radius: 4px !important;
+  margin: 0 1px !important;
+}
+
+.gmate-diff-fallback {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.gmate-diff-del-block {
+  color: #f87171 !important;
+  text-decoration: line-through !important;
+  opacity: 0.85 !important;
+}
+
+.gmate-diff-ins-block {
+  color: #34d399 !important;
+  font-weight: 500 !important;
+}
+
+.gmate-result-actions {
+  display: flex !important;
+  gap: 6px !important;
+}
+
+.gmate-btn-accept {
+  flex: 1 !important;
+  background: #f4f4f5 !important;
+  color: #09090b !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 7px 10px !important;
+  font-family: inherit !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  transition: all 0.15s ease !important;
+}
+
+.gmate-btn-accept:hover {
+  background: #ffffff !important;
+}
+
+.gmate-btn-reject {
+  background: transparent !important;
+  color: #a1a1aa !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 6px !important;
+  padding: 7px 10px !important;
+  font-family: inherit !important;
+  font-weight: 500 !important;
+  font-size: 11px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.gmate-btn-reject:hover {
+  background: rgba(255, 118, 117, 0.1) !important;
+  color: #ff7675 !important;
+  border-color: rgba(255, 118, 117, 0.2) !important;
+}
+
+/* Pulse Dot & Status */
+.gmate-pulse-dot {
+  width: 6px !important;
+  height: 6px !important;
+  background-color: #ffffff !important;
+  border-radius: 50% !important;
+  animation: gmate-pulse 1.4s infinite ease-in-out !important;
+  display: inline-block !important;
+  margin-right: 6px !important;
+  flex-shrink: 0 !important;
+}
+
+@keyframes gmate-pulse {
+  0%, 100% {
+    transform: scale(0.85);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes gmate-fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.gmate-error-msg {
+  font-size: 11px !important;
+  color: #ff7675 !important;
+  padding: 4px 6px !important;
+  background: rgba(255, 118, 117, 0.1) !important;
+  border: 1px solid rgba(255, 118, 117, 0.2) !important;
+  border-radius: 6px !important;
+  max-width: 100% !important;
+  word-wrap: break-word !important;
+  line-height: 1.4 !important;
+}
+
+/* Animated Loading Wrapper & Text */
+.gmate-loading-text-wrapper {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  width: 145px !important; /* stable width so button does not jump size */
+  text-align: left !important;
+  overflow: hidden !important; /* clip any text that overflows */
+  white-space: nowrap !important;
+  opacity: 1 !important;
+  transition: opacity 0.35s ease-in-out !important;
+}
+
+.gmate-loading-text-wrapper.gmate-fade-out {
+  opacity: 0 !important;
+}
+
+.gmate-loading-text {
+  display: inline-flex !important;
+  align-items: center !important;
+  overflow: hidden !important;
+}
+
+.gmate-letter {
+  display: inline-block !important;
+  opacity: 0;
+  transform: translateY(1.1em);
+  animation-name: gmate-letter-slide-up !important;
+  animation-duration: 0.5s !important;
+  animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1) !important;
+  animation-fill-mode: forwards !important;
+}
+
+@keyframes gmate-letter-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.1em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Cascading blinking dots */
+.gmate-loading-dots {
+  display: inline-flex !important;
+  font-weight: 700 !important;
+}
+
+.gmate-loading-dots span {
+  animation: gmate-dot-cascade 1.4s infinite cubic-bezier(0.4, 0, 0.2, 1) both !important;
+}
+
+.gmate-loading-dots span:nth-child(1) {
+  animation-delay: 0s !important;
+}
+
+.gmate-loading-dots span:nth-child(2) {
+  animation-delay: 0.2s !important;
+}
+
+.gmate-loading-dots span:nth-child(3) {
+  animation-delay: 0.4s !important;
+}
+
+@keyframes gmate-dot-cascade {
+  0% {
+    opacity: 0.1;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+  60%, 100% {
+    opacity: 0.1;
+    transform: translateY(0);
+  }
+}

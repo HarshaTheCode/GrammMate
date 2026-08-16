@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GrammMate Test Bench</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #18181b;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --accent: #ffffff;
+      --accent-glow: rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .section {
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    textarea, input[type="text"], .editable-box {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 14px;
+      padding: 14px;
+      outline: none;
+      transition: all 0.3s ease;
+      line-height: 1.5;
+    }
+
+    textarea:focus, input[type="text"]:focus, .editable-box:focus {
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    textarea {
+      height: 100px;
+      resize: vertical;
+    }
+
+    .editable-box {
+      min-height: 100px;
+      background: rgba(255, 255, 255, 0.01);
+      border-style: dashed;
+      cursor: text;
+    }
+
+    .instructions {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .instructions strong {
+      color: #ffffff;
+    }
+
+    .instructions ol {
+      padding-left: 20px;
+      margin-top: 8px;
+    }
+
+    .instructions li {
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>GrammMate Testing Bench</h1>
+      <p class="subtitle">Use this page to test the text selection and correction features.</p>
+
+      <div class="instructions">
+        <strong>How to use:</strong>
+        <ol>
+          <li>Ensure the extension is loaded unpackaged in your browser.</li>
+          <li>Make sure you set your API key in the extension options page (click the extension icon in your browser toolbar to open it).</li>
+          <li>Select/highlight some text with errors inside any of the fields below.</li>
+          <li>Click the floating <strong>✨</strong> button launcher that appears near your selection, then click <strong>✨ Fix Grammar</strong>!</li>
+        </ol>
+      </div>
+
+      <!-- Test Area 1: Textarea -->
+      <div class="section">
+        <label for="test-textarea">Standard Textarea Element</label>
+        <textarea id="test-textarea">He go to school yesterday and write a code who work good.</textarea>
+      </div>
+
+      <!-- Test Area 2: Input Field -->
+      <div class="section">
+        <label for="test-input">Standard Text Input Element</label>
+        <input type="text" id="test-input" value="Their are to many mistakes here.">
+      </div>
+
+      <!-- Test Area 3: Contenteditable Div -->
+      <div class="section">
+        <label>Rich Text / Contenteditable Div</label>
+        <div class="editable-box" contenteditable="true">We was eating lunch when she ring the phone.</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
