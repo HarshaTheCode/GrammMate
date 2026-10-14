@@ -2,10 +2,15 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
   const apiKeyInput = document.getElementById('apiKey');
+  const modelInput = document.getElementById('apiModel');
   const btnSave = document.getElementById('btnSave');
   const statusMsg = document.getElementById('statusMsg');
   const toggleKeyBtn = document.getElementById('toggleKey');
   const eyeIcon = document.getElementById('eyeIcon');
+  const presetCards = document.querySelectorAll('.preset-card');
+
+  const DEFAULT_MODEL = "openrouter/free";
+  const OBSOLETE_MODEL = "openai/gpt-oss-20b:free";
 
   // Eye icon paths
   const eyeOpenPath = "M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z";
@@ -29,18 +34,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     return null;
   }
 
-  // Load API Key from local storage or fallback to .env
-  const storageData = await chrome.storage.local.get(['apiKey']);
+  // Update preset cards UI selection state based on current model value
+  function syncPresetCards(selectedModel) {
+    let matchFound = false;
+    presetCards.forEach(card => {
+      const cardModel = card.getAttribute('data-model');
+      if (cardModel === selectedModel) {
+        card.classList.add('active');
+        matchFound = true;
+      } else {
+        card.classList.remove('active');
+      }
+    });
+  }
+
+  // Preset Card click handler
+  presetCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const modelVal = card.getAttribute('data-model');
+      modelInput.value = modelVal;
+      syncPresetCards(modelVal);
+    });
+  });
+
+  // Custom text input change handler
+  modelInput.addEventListener('input', () => {
+    syncPresetCards(modelInput.value.trim());
+  });
+
+  // Load configuration from storage
+  const storageData = await chrome.storage.local.get(['apiKey', 'apiModel']);
   const envKey = await checkForEnvKey();
 
   if (storageData.apiKey) {
     apiKeyInput.value = storageData.apiKey;
-    showStatus("API Key loaded from local storage.", "success");
   } else if (envKey) {
     apiKeyInput.value = envKey;
-    showStatus("API Key pre-loaded from .env configuration.", "success");
+  }
+
+  let activeModel = storageData.apiModel;
+  // Automatically migrate away from obsolete model
+  if (!activeModel || activeModel === OBSOLETE_MODEL) {
+    activeModel = DEFAULT_MODEL;
+    await chrome.storage.local.set({ apiModel: DEFAULT_MODEL });
+  }
+
+  modelInput.value = activeModel;
+  syncPresetCards(activeModel);
+
+  if (storageData.apiKey || envKey) {
+    showStatus("Configurations loaded. Auto-fallback routing active.", "success");
   } else {
-    showStatus("No API Key configured. Please enter and save one to start.", "error");
+    showStatus("No API Key configured. Please enter settings to start.", "error");
   }
 
   // Toggle API Key visibility
@@ -50,23 +95,75 @@ document.addEventListener('DOMContentLoaded', async () => {
     eyeIcon.querySelector('path').setAttribute('d', isPassword ? eyeClosedPath : eyeOpenPath);
   });
 
-  // Save API Key to local storage
+  // Verify and Save configurations
   btnSave.addEventListener('click', async () => {
-    const val = apiKeyInput.value.trim();
-    if (!val) {
-      showStatus("Please enter a valid API Key.", "error");
+    const keyVal = apiKeyInput.value.trim();
+    const modelVal = modelInput.value.trim() || DEFAULT_MODEL;
+
+    if (!keyVal) {
+      showStatus("Please enter an OpenRouter API Key.", "error");
       return;
     }
 
+    showStatus("Testing model connection and latency on OpenRouter...", "success");
+    btnSave.disabled = true;
+
     try {
-      await chrome.storage.local.set({ apiKey: val });
-      showStatus("API Key saved successfully! GrammMate is ready.", "success");
-      
-      // Add visual pop to the button
-      btnSave.style.transform = "scale(0.95)";
-      setTimeout(() => btnSave.style.transform = "none", 150);
+      // Execute a quick verification call with fallback batch
+      const testModels = [modelVal];
+      if (modelVal !== "openrouter/free") {
+        testModels.push("openrouter/free");
+      }
+      if (modelVal !== "nvidia/nemotron-3.5-lightning:free") {
+        testModels.push("nvidia/nemotron-3.5-lightning:free");
+      }
+
+      const startMs = Date.now();
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${keyVal}`,
+          "HTTP-Referer": "https://aerotext.local",
+          "X-Title": "GrammMate Verification"
+        },
+        body: JSON.stringify({
+          models: testModels.slice(0, 3),
+          messages: [{ role: "user", content: "ping" }],
+          max_tokens: 5
+        })
+      });
+
+      const elapsed = Date.now() - startMs;
+
+      if (response.ok) {
+        const respJson = await response.json();
+        const activeRouted = respJson.model || modelVal;
+        await chrome.storage.local.set({ 
+          apiKey: keyVal, 
+          apiModel: modelVal,
+          lastUsedModel: activeRouted
+        });
+
+        showStatus(`Verified in ${elapsed}ms! Routed via: ${activeRouted}. Settings saved.`, "success");
+        
+        btnSave.style.transform = "scale(0.96)";
+        setTimeout(() => btnSave.style.transform = "none", 150);
+      } else {
+        const errText = await response.text();
+        let errMsg = `HTTP ${response.status}: ${response.statusText}`;
+        try {
+          const parsed = JSON.parse(errText);
+          if (parsed?.error?.message) {
+            errMsg = parsed.error.message;
+          }
+        } catch (e) {}
+        showStatus("Verification failed: " + errMsg, "error");
+      }
     } catch (err) {
-      showStatus("Failed to save settings: " + err.message, "error");
+      showStatus("Connection error: " + err.message, "error");
+    } finally {
+      btnSave.disabled = false;
     }
   });
 

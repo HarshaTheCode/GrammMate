@@ -10,7 +10,7 @@ Any new AI assistant loading this codebase should review this document to instan
 * **Name:** GrammMate
 * **Objective:** A browser extension that allows users to select text on any website (in inputs, textareas, or contenteditable areas), select a specific rewrite tone, review a diff comparison of changes, and replace the selection inline while maintaining the browser's undo/redo history stack (Ctrl+Z).
 * **API Provider:** OpenRouter API (`https://openrouter.ai/api/v1/chat/completions`).
-* **Active LLM:** `openai/gpt-oss-20b:free` (Chosen due to rate limits on Google Gemma free tiers).
+* **Active LLM Architecture:** Dynamic Multi-Model Fallback Router with curated free models (`openrouter/free`, `nvidia/nemotron-3.5-lightning:free`, `google/gemma-4-26b-a4b-it:free`, `nvidia/nemotron-3-super-120b-a12b:free`, `dots-studio/dots-3-note-preview:free`, `cohere/north-mini-code:free`, `liquid/lfm-2.5-2.6b:free`). Automatically falls through batches if any model is rate-limited (429) or decommissioned. Supercedes retired `openai/gpt-oss-20b:free`.
 
 ---
 
@@ -27,7 +27,6 @@ Grammer Buddy/ (Workspace Root)
 ├── popup.js              # Controls statistics rendering, history copy logic, and toggle status
 ├── options.html          # Secure options settings page for inputting custom API keys
 ├── options.js            # Manages API key saving to storage and masks password inputs
-├── test.html             # Testing playground loaded with incorrect sentences inside text areas
 └── icons/                # High quality PNG icons generated in 16x16, 48x48, and 128x128 sizes
     ├── icon16.png
     ├── icon48.png
@@ -53,9 +52,11 @@ The extension queries keys using a strict fallback chain:
 
 ### C. Background Correction API Request (`background.js`)
 * The content script sends a `{ action: "correctText", text: "...", tone: "..." }` message.
-* The background script queries OpenRouter with the prompt:
-  - **Standard System Prompt:** Strict rules to preserve meaning, make minimum changes, avoid style improvements unless incorrect, output *only* raw text, and return text unchanged if correct.
-  - **Tone Modulation:** If a tone is selected (Professional, Casual, Academic, Shorter), an additional instruction is dynamically appended to the system prompt to guide style adjustments.
+* **Two-Tier Fallback Routing Engine:**
+  - **Tier 1 (Server-side Batch Fallback):** Background constructs 3-model batches starting with the user's preferred model (or `openrouter/free`) followed by high-speed free models like `nvidia/nemotron-3.5-lightning:free` and `google/gemma-4-26b-a4b-it:free`. OpenRouter automatically routes across the batch without client round-trips.
+  - **Tier 2 (Client-side Batch Loop):** If a batch encounters 404 (model retired), 429 (rate-limit), 503, or invalid format, the engine seamlessly continues to the next batch of free models until a response is secured.
+  - **Zero-Chatter Sanitization:** Output is stripped of `<think>...</think>` reasoning tokens, accidental outer quotes, and markdown code fences to ensure pure text replacement.
+* **Active Model Tracking:** Records `lastUsedModel` in `chrome.storage.local` to expose real-time routing status to the popup dashboard.
 * **Stats Logger:** On success, background parses `data.usage.total_tokens` and increments `correctionsCount` and `tokensCount` inside `chrome.storage.local`.
 * **De-duplicated History Queue:** On success, background pushes `{ original, corrected, timestamp }` to the front of a history array, filters out older duplicates of the same original text, slices it to a **maximum of 5 entries**, and saves it to storage.
 

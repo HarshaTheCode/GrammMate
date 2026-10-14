@@ -17,7 +17,13 @@ It provides an elegant, floating, glassmorphic correction panel that appears dir
   - `Shorter` (Conciser summary)
 - **Inline Word-Level Diffing:** Displays original text deletions in light red strikethroughs and new additions in mint-green highlight boxes, drawing your eye exactly to what changed.
 - **Copy to Clipboard:** Features a fast-copy utility icon inside the suggestion container to copy suggestions without inserting.
-- **Tactile Staggered Loader:** A custom, 60fps staggered letter-slide loading transition with sequential pulsing waves that entertains during slow OpenRouter API responses.
+- **Dynamic Multi-Model Auto-Fallback Router:** Never encounter service downtime when free models hit rate limits (429) or get retired. Automatically failsover across curated top free models:
+  - `openrouter/free` (Recommended - Dynamic auto-routing free pool)
+  - `nvidia/nemotron-3.5-lightning:free` (Ultra-low ~600ms latency, 1M context)
+  - `google/gemma-4-26b-a4b-it:free` (Google Gemma 4 26B instruct model)
+  - `nvidia/nemotron-3-super-120b-a12b:free` (120B parameter flagship reasoning)
+  - `dots-studio/dots-3-note-preview:free` (512k context high-fidelity polish)
+- **Zero-Chatter Clean Sanitization:** Automatically strips reasoning tags (`<think>...</think>`), code fences, and quotes to ensure clean inline text replacement.
 - **Manifest V3 Compliant:** Fully sandboxed execution adhering to modern browser safety specifications.
 
 ---
@@ -48,13 +54,6 @@ Since this is a custom extension, you can load it directly into any Chromium-bas
    OPENROUTER_API_KEY=your_key_here
    ```
 
----
-
-## 🧪 Testing
-
-Open the built-in testing bench page by clicking the extension icon in the toolbar and choosing **Open Testing Page**, or open `test.html` in your browser. Select any test sentence inside the fields to trigger the launcher badge!
-
----
 
 ## 📁 Project Structure
 
@@ -64,7 +63,6 @@ Open the built-in testing bench page by clicking the extension icon in the toolb
 - `content.css`: Visual design guidelines, segmented pills, pulsing dot states, and keyframe animations.
 - `popup.html` / `popup.js`: Dashboard showing toggle switch, correction history list, and usage metrics.
 - `options.html` / `options.js`: Options configuration page to securely save your API key.
-- `test.html`: Sandbox bench containing test fields for textareas, inputs, and contenteditable sections.
 
 ---
 

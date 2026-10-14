@@ -7,8 +7,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const statsCount = document.getElementById('statsCount');
   const statsTokens = document.getElementById('statsTokens');
   const btnSettings = document.getElementById('btnSettings');
-  const btnPlayground = document.getElementById('btnPlayground');
+  const btnClearHistory = document.getElementById('btnClearHistory');
   const historyList = document.getElementById('historyList');
+  const modelBadge = document.getElementById('modelBadge');
 
   // Copy icon SVG
   const copySvg = `<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
@@ -39,7 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     'extensionEnabled', 
     'correctionsCount', 
     'tokensCount',
-    'history'
+    'history',
+    'apiModel',
+    'lastUsedModel'
   ]);
   const envKey = await checkForEnvKey();
 
@@ -50,6 +53,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   btnToggle.checked = isEnabled;
   statsCount.innerText = storageData.correctionsCount || 0;
   statsTokens.innerText = formatTokens(storageData.tokensCount || 0);
+
+  // Auto-migrate legacy obsolete model and display active model
+  let currentModel = storageData.apiModel;
+  if (!currentModel || currentModel === "openai/gpt-oss-20b:free") {
+    currentModel = "openrouter/free";
+    await chrome.storage.local.set({ apiModel: "openrouter/free" });
+  }
+
+  if (modelBadge) {
+    const displayModel = storageData.lastUsedModel || currentModel;
+    modelBadge.innerText = displayModel.replace(':free', '');
+    modelBadge.title = `Active Model: ${displayModel}\nAuto-fallback routing active`;
+  }
 
   updateStatus(isEnabled, hasKey);
   renderHistory(storageData.history || []);
@@ -66,9 +82,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     chrome.runtime.openOptionsPage();
   });
 
-  // Playground click handler
-  btnPlayground.addEventListener('click', () => {
-    chrome.tabs.create({ url: chrome.runtime.getURL('test.html') });
+  // Clear History click handler
+  btnClearHistory.addEventListener('click', async () => {
+    await chrome.storage.local.set({ history: [] });
+    renderHistory([]);
   });
 
   // Update badge UI states

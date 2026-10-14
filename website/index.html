@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GrammMate — BYOK AI Grammar Correction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="navbar">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" class="logo-icon"><path d="M12 2L14.8 8.6L22 9.2L16.5 13.9L18.2 21L12 17.2L5.8 21L7.5 13.9L2 9.2L9.2 8.6L12 2Z"/></svg>
+      <span>GrammMate</span>
+    </div>
+    <a href="#install" class="btn-nav-install">Install Extension</a>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="badge-pill">Manifest V3 Compliant</div>
+      <h1>Grammar Correction,<br>Powered by Your Keys.</h1>
+      <p class="hero-sub text-muted">
+        A free, privacy-first browser extension that overlays AI-powered grammar and spelling assistance on any website. Bypass expensive monthly subscriptions with your own OpenRouter credentials.
+      </p>
+      <div class="hero-actions">
+        <a href="#install" class="btn-primary">Get Started Free</a>
+        <a href="#demo-anchor" class="btn-secondary">Watch Interactive Demo</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Demo Section -->
+  <section class="demo-section" id="demo-anchor">
+    <div class="section-header">
+      <h2>See GrammMate in Action</h2>
+      <p class="text-muted">Type something with errors below, highlight it, and click the widget to experience the fluid correction sequence.</p>
+    </div>
+
+    <div class="demo-container">
+      <div class="demo-window">
+        <div class="window-header">
+          <div class="window-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <div class="window-title">Browser Textarea Mockup</div>
+        </div>
+
+        <div class="window-body">
+          <textarea id="demoTextarea" spellcheck="false">He go to school yesterday and write a code who work good.</textarea>
+          
+          <!-- Mock Floating Launcher (Invisible by default, appears when text is selected/highlighted) -->
+          <div id="mockLauncher" class="mock-launcher" title="GrammMate: Correct spelling and grammar">
+            <svg viewBox="0 0 24 24"><path d="M12 2L14.8 8.6L22 9.2L16.5 13.9L18.2 21L12 17.2L5.8 21L7.5 13.9L2 9.2L9.2 8.6L12 2Z"/></svg>
+          </div>
+
+          <!-- Mock Expanded Panel -->
+          <div id="mockPanel" class="mock-panel">
+            <div class="gmate-header">
+              <div class="gmate-title">
+                <svg viewBox="0 0 24 24"><path d="M12 2L14.8 8.6L22 9.2L16.5 13.9L18.2 21L12 17.2L5.8 21L7.5 13.9L2 9.2L9.2 8.6L12 2Z"/></svg>
+                GrammMate
+              </div>
+              <button class="gmate-btn-settings" disabled>
+                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+              </button>
+            </div>
+
+            <!-- Panel Tone Section -->
+            <div class="gmate-body" id="gmateBodyTones">
+              <div class="gmate-form-group">
+                <label class="gmate-label">Select Tone</label>
+                <div class="gmate-pills-container">
+                  <button class="gmate-pill active" data-value="standard">Standard</button>
+                  <button class="gmate-pill" data-value="professional">Professional</button>
+                  <button class="gmate-pill" data-value="casual">Casual</button>
+                  <button class="gmate-pill" data-value="academic">Academic</button>
+                  <button class="gmate-pill" data-value="shorter">Shorter</button>
+                </div>
+              </div>
+              <div class="gmate-actions">
+                <button class="gmate-btn-primary" id="demoBtnFix">✨ Fix Grammar</button>
+                <button class="gmate-btn-secondary" id="demoBtnCancel">Dismiss</button>
+              </div>
+            </div>
+
+            <!-- Panel Result / Diff View (Hidden initially) -->
+            <div class="gmate-body" id="gmateBodyResult" style="display: none;">
+              <div class="gmate-result-header">
+                <span class="gmate-label">Suggested Changes</span>
+              </div>
+              <div class="gmate-preview-container">
+                <div class="gmate-diff-view" id="demoDiffView"></div>
+              </div>
+              <div class="gmate-result-actions">
+                <button class="gmate-btn-accept" id="demoBtnAccept">✓ Apply</button>
+                <button class="gmate-btn-reject" id="demoBtnReject">Discard</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="demo-instructions">
+        <h3>Keyboard Mode Trigger</h3>
+        <p class="text-muted">Highlight the text inside the editor window and press <kbd>Space</kbd> + <kbd>F</kbd> to open the panel with your keyboard instantly!</p>
+        <div class="kb-shortcuts">
+          <div class="kb-row">
+            <span class="kb-key">Arrow Keys</span>
+            <span class="kb-desc">Navigate Tones</span>
+          </div>
+          <div class="kb-row">
+            <span class="kb-key">Enter</span>
+            <span class="kb-desc">Fix / Apply Suggestions</span>
+          </div>
+          <div class="kb-row">
+            <span class="kb-key">Escape</span>
+            <span class="kb-desc">Dismiss Panel</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid Section -->
+  <section class="features">
+    <div class="section-header">
+      <h2>Privacy-First Architecture</h2>
+      <p class="text-muted">All capabilities, zero subscription fees. Tailored to your personal developer workflow.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔑</div>
+        <h3>Bring Your Own Key</h3>
+        <p class="text-muted">Connect directly to OpenRouter's official API endpoints. No recurring monthly subscriptions, pay only for the tokens you actually use.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">✨</div>
+        <h3>Segmented Tone Shifter</h3>
+        <p class="text-muted">Switch seamlessly between Standard, Professional, Casual, Academic, and Shorter styles to match your target context perfectly.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Space + F Shortcuts</h3>
+        <p class="text-muted">An accessibility-first design. Expand and select correction options entirely through fluid keyboard shortcuts and arrow key menus.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Word-Level Diff View</h3>
+        <p class="text-muted">Displays precise deletions in strikes and additions in green highlighting. Verify adjustments instantly before writing to the document.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How to Install Section -->
+  <section class="install-section" id="install">
+    <div class="section-header">
+      <h2>Installation Guide</h2>
+      <p class="text-muted">Load GrammMate directly into your browser in under a minute.</p>
+    </div>
+
+    <div class="install-container">
+      <div class="install-tabs">
+        <button class="tab-btn active" data-tab="chrome">Chromium Browsers</button>
+        <button class="tab-btn" data-tab="api">Setup API Key</button>
+      </div>
+
+      <div class="tab-content active" id="tab-chrome">
+        <ol class="step-list">
+          <li>
+            <div class="step-num">01</div>
+            <div class="step-detail">
+              <strong>Download Workspace Root</strong>
+              <p class="text-muted">Clone or download the project files into a folder on your computer.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">02</div>
+            <div class="step-detail">
+              <strong>Open Extensions Page</strong>
+              <p class="text-muted">Navigate to <code class="code-badge">chrome://extensions/</code> (or <code class="code-badge">brave://extensions/</code>, <code class="code-badge">edge://extensions/</code>).</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">03</div>
+            <div class="step-detail">
+              <strong>Enable Developer Mode</strong>
+              <p class="text-muted">Toggle the **Developer mode** switch in the top-right corner to **ON**.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">04</div>
+            <div class="step-detail">
+              <strong>Load Unpacked Folder</strong>
+              <p class="text-muted">Click the **Load unpacked** button in the top-left and select the root folder of the project.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <div class="tab-content" id="tab-api">
+        <ol class="step-list">
+          <li>
+            <div class="step-num">01</div>
+            <div class="step-detail">
+              <strong>Create OpenRouter Account</strong>
+              <p class="text-muted">Create an account and key at <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a> (completely free tiers are available).</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">02</div>
+            <div class="step-detail">
+              <strong>Click Extension Icon</strong>
+              <p class="text-muted">Click the GrammMate icon in your browser toolbar and click **Options**.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">03</div>
+            <div class="step-detail">
+              <strong>Save Your Settings</strong>
+              <p class="text-muted">Enter your API key and preferred model name, then hit Save. GrammMate is ready to assist you!</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p class="text-muted">© 2026 GrammMate. MIT License. BYOK extension built for privacy and performance.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

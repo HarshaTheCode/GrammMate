@@ -10,7 +10,7 @@ Text Capture: The ability to highlight text in any input field or text area on a
 
 Trigger Mechanism: A floating "Fix" button that appears near highlighted text, or a keyboard shortcut (e.g., Ctrl+Shift+E).
 
-API Bridge: A background script that securely passes the highlighted text to the OpenRouter API using google/gemma-4-31b-it:free and a strict zero-chatter system prompt.
+API Bridge: A background script that securely passes the highlighted text to OpenRouter using an auto-fallback router across top free models (default: openrouter/free, with automatic failover to nvidia/nemotron-3.5-lightning:free, google/gemma-4-26b-a4b-it:free, etc.) and a strict zero-chatter system prompt.
 
 Text Replacement: Automatically replaces the highlighted text with the corrected version returned by the AI.
 

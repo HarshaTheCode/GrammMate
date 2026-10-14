@@ -11,7 +11,6 @@
 })();
 
 // SVG Icons
-// SVG Icons
 const starIcon = `<svg viewBox="0 0 24 24"><path d="M12 2L14.8 8.6L22 9.2L16.5 13.9L18.2 21L12 17.2L5.8 21L7.5 13.9L2 9.2L9.2 8.6L12 2Z"/></svg>`;
 const settingsIcon = `<svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>`;
 
@@ -99,6 +98,7 @@ class GrammMateWidget {
     this.selectedTone = "standard";
     this.loadingInterval = null;
     this.fadeTimeout = null;
+    this.boundKeyDownHandler = null;
     this.createLauncher();
   }
 
@@ -196,7 +196,95 @@ class GrammMateWidget {
       chrome.runtime.sendMessage({ action: "openSettings" });
     });
 
+    // Bind keydown listener for controls inside the expanded widget
+    this.boundKeyDownHandler = this.handleKeyDown.bind(this);
+    document.addEventListener('keydown', this.boundKeyDownHandler, true);
+
     this.updatePosition();
+  }
+
+  handleKeyDown(e) {
+    if (!this.isExpanded) return;
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      this.destroy();
+      return;
+    }
+
+    const resultArea = this.portal.querySelector('#gmateResultArea');
+    const isComparisonView = resultArea && resultArea.style.display !== 'none';
+
+    if (!isComparisonView) {
+      const tones = ['standard', 'professional', 'casual', 'academic', 'shorter'];
+      
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        e.stopPropagation();
+        let currIndex = tones.indexOf(this.selectedTone);
+        let nextIndex = (currIndex + 1) % tones.length;
+        this.selectToneByIndex(nextIndex);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        e.stopPropagation();
+        let currIndex = tones.indexOf(this.selectedTone);
+        let prevIndex = (currIndex - 1 + tones.length) % tones.length;
+        this.selectToneByIndex(prevIndex);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        e.stopPropagation();
+        const btnFix = this.portal.querySelector('#gmateBtnFix');
+        if (btnFix && !btnFix.disabled) {
+          this.handleFix();
+        }
+      }
+    } else {
+      const keyLower = e.key.toLowerCase();
+      if (e.key === 'Enter' || keyLower === 'y' || keyLower === 'a') {
+        e.preventDefault();
+        e.stopPropagation();
+        this.applyCorrection();
+      } else if (keyLower === 'n' || keyLower === 'd') {
+        e.preventDefault();
+        e.stopPropagation();
+        this.destroy();
+      } else if (keyLower === 'c') {
+        e.preventDefault();
+        e.stopPropagation();
+        this.copyResultText();
+      }
+    }
+  }
+
+  selectToneByIndex(index) {
+    const tones = ['standard', 'professional', 'casual', 'academic', 'shorter'];
+    const toneVal = tones[index];
+    this.selectedTone = toneVal;
+
+    const pills = this.portal.querySelectorAll('.gmate-pill');
+    pills.forEach(pill => {
+      if (pill.getAttribute('data-value') === toneVal) {
+        pill.classList.add('active');
+      } else {
+        pill.classList.remove('active');
+      }
+    });
+  }
+
+  async copyResultText() {
+    try {
+      await navigator.clipboard.writeText(this.correctedText);
+      const copyBtn = this.portal.querySelector('.gmate-btn-copy-result');
+      if (copyBtn) {
+        copyBtn.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="#10b981"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+        setTimeout(() => {
+          copyBtn.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
+        }, 1500);
+      }
+    } catch (err) {
+      console.error("Failed to copy corrected text:", err);
+    }
   }
 
   updatePosition() {
@@ -401,17 +489,9 @@ class GrammMateWidget {
 
     // Bind Copy Icon
     const copyBtn = resultArea.querySelector('.gmate-btn-copy-result');
-    copyBtn.addEventListener('click', async (e) => {
+    copyBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      try {
-        await navigator.clipboard.writeText(this.correctedText);
-        copyBtn.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="#10b981"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
-        setTimeout(() => {
-          copyBtn.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
-        }, 1500);
-      } catch (err) {
-        console.error("Failed to copy corrected text:", err);
-      }
+      this.copyResultText();
     });
 
     // Bind Accept/Reject
@@ -457,6 +537,10 @@ class GrammMateWidget {
   destroy() {
     if (activeWidget === this) {
       activeWidget = null;
+    }
+    if (this.boundKeyDownHandler) {
+      document.removeEventListener('keydown', this.boundKeyDownHandler, true);
+      this.boundKeyDownHandler = null;
     }
     if (this.portal) {
       this.portal.classList.remove('gmate-visible');
@@ -588,5 +672,84 @@ function handleSelectionEvent(e) {
 
 document.addEventListener('mouseup', handleSelectionEvent);
 document.addEventListener('keyup', handleSelectionEvent);
+
+// Global Space+F shortcut keyboard tracking variables
+let spacePressed = false;
+let spaceSelectionActive = false;
+let spaceShortcutTriggered = false;
+
+document.addEventListener('keydown', (e) => {
+  if (activeWidget && activeWidget.isExpanded) {
+    return;
+  }
+
+  if (e.key === ' ' || e.code === 'Space') {
+    spacePressed = true;
+    const info = getSelectionInfo();
+    if (info) {
+      spaceSelectionActive = true;
+      e.preventDefault();
+    }
+    return;
+  }
+
+  if (e.key.toLowerCase() === 'f') {
+    if (spacePressed && spaceSelectionActive) {
+      e.preventDefault();
+      e.stopPropagation();
+      spaceShortcutTriggered = true;
+
+      chrome.storage.local.get({ extensionEnabled: true }, (storage) => {
+        if (!storage.extensionEnabled) return;
+
+        const info = getSelectionInfo();
+        if (info) {
+          if (activeWidget) {
+            activeWidget.destroy();
+          }
+          activeWidget = new GrammMateWidget(info);
+          activeWidget.expandPanel();
+        }
+      });
+    }
+  }
+});
+
+document.addEventListener('keyup', (e) => {
+  if (activeWidget && activeWidget.isExpanded) {
+    return;
+  }
+
+  if (e.key === ' ' || e.code === 'Space') {
+    spacePressed = false;
+    
+    if (spaceSelectionActive && !spaceShortcutTriggered) {
+      const info = getSelectionInfo();
+      if (info) {
+        const { type, element, range, start, end } = info;
+        if (type === 'contenteditable') {
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          document.execCommand('insertText', false, ' ');
+        } else if (type === 'input') {
+          element.focus();
+          element.setSelectionRange(start, end);
+          const success = document.execCommand('insertText', false, ' ');
+          if (!success) {
+            const val = element.value;
+            element.value = val.substring(0, start) + ' ' + val.substring(end);
+            element.dispatchEvent(new Event('input', { bubbles: true }));
+            element.dispatchEvent(new Event('change', { bubbles: true }));
+            element.setSelectionRange(start + 1, start + 1);
+          }
+        }
+      }
+    }
+    
+    spaceSelectionActive = false;
+    spaceShortcutTriggered = false;
+  }
+});
 
 console.log("GrammMate Debug: Content script injected and listening.");
